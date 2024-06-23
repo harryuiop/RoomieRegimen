@@ -1,4 +1,4 @@
-import {Box} from "@mui/material";
+import {Avatar, Box, Typography} from "@mui/material";
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 
@@ -13,11 +13,24 @@ import { CSS } from "@dnd-kit/utilities"
     const style = {
         transition,
         transform: CSS.Transform.toString(transform),
+        backgroundColor: "#242424",
+        marginTop: 10,
+        marginBottom: 10,
+        paddingTop: 10,
+        paddingBottom: 10,
+        paddingLeft: 10,
+        paddingRight: 20,
+        borderRadius: 3
     }
 
     return (
         <div ref={setNodeRef} {...attributes} {...listeners} style={style}>
-            {name}
+            <Box display={"flex"} alignItems={"flex-end"}>
+                <Avatar>{name.slice(0, 1)}</Avatar>
+                <Typography variant={"h6"} style={{marginLeft: 15}}>
+                    {name}
+                </Typography>
+            </Box>
         </div>
     );
 };

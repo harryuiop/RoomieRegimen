@@ -1,7 +1,7 @@
 'use client';
 import { Box } from "@mui/material";
 import PocketBase from "pocketbase";
-import { DndContext, closestCorners } from "@dnd-kit/core"
+import { DndContext, closestCorners, useSensor, PointerSensor, TouchSensor, useSensors } from "@dnd-kit/core"
 import { useEffect, useState } from "react";
 import { Person } from "person";
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable"
@@ -38,19 +38,24 @@ const RotationTable = () => {
         })
     }
 
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(TouchSensor)
+    )
+
     return (
         <Box
             sx={{
                 backgroundColor: 'transparent',
-                border: '1px solid white',
-                padding: 2,
+                border: '1px solid grey',
+                padding: 3,
                 borderRadius: 3,
                 width: '100%',
                 maxHeight: '80vh',
                 overflowY: 'auto',
             }}
         >
-            <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
+            <DndContext sensors={sensors} onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
                 <SortableContext items={flatmates} strategy={verticalListSortingStrategy}>
                     {flatmates.map((flatmate) => (
                         <div key={flatmate.id}>
