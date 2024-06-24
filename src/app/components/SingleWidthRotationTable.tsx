@@ -3,11 +3,11 @@ import { Box } from "@mui/material";
 import PocketBase from "pocketbase";
 import { DndContext, closestCorners, useSensor, PointerSensor, TouchSensor, useSensors } from "@dnd-kit/core"
 import { useEffect, useState } from "react";
-import { Person } from "person";
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable"
 import NameCard from "./NameCard";
+import { Person } from "pbData";
 
-const RotationTable = () => {
+const SingleWidthRotationTable = () => {
     const [flatmates, setFlatmates] = useState<Person[]>([]);
     const [isClient, setIsClient] = useState(false);
     const pb = new PocketBase('http://127.0.0.1:8090');
@@ -59,7 +59,8 @@ const RotationTable = () => {
                 <SortableContext items={flatmates} strategy={verticalListSortingStrategy}>
                     {flatmates.map((flatmate) => (
                         <div key={flatmate.id}>
-                            <NameCard id={flatmate.id} name={flatmate.name}/>
+                            {flatmates.indexOf(flatmate) === 0 ? <NameCard id={flatmate.id} name={flatmate.name} primary={true}/>
+                            : <NameCard id={flatmate.id} name={flatmate.name} primary={false}/>}
                         </div>
                     ))}
                 </SortableContext>
@@ -68,4 +69,4 @@ const RotationTable = () => {
     );
 };
 
-export default RotationTable;
+export default SingleWidthRotationTable;

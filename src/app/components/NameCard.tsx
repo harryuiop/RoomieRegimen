@@ -3,7 +3,7 @@ import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 
 
-    const NameCard = ({ id, name }: { id: string, name: string }) => {
+    const NameCard = ({ id, name, primary }: { id: string, name: string, primary: boolean }) => {
         const {
             attributes,
             listeners, setNodeRef,
@@ -13,14 +13,15 @@ import { CSS } from "@dnd-kit/utilities"
     const style = {
         transition,
         transform: CSS.Transform.toString(transform),
-        backgroundColor: "#242424",
         marginTop: 10,
         marginBottom: 10,
         paddingTop: 10,
         paddingBottom: 10,
         paddingLeft: 10,
         paddingRight: 20,
-        borderRadius: 3
+        borderRadius: 20,
+        cursor: "pointer",
+        backgroundColor: primary ? "#9F2B68" : "#242424"
     }
 
     return (
