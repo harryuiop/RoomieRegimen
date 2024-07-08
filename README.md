@@ -1,5 +1,3 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
 STILL IN DEVELOPMENT
 
 This is a small NextJS/React project that was created to help flatmates manage chores around the house. It priortises simplicity and runs automatatic daily rotation and drag and drop rearrangment.
@@ -16,7 +14,7 @@ cd pocketbase_dir
 /pocketbase serve
 ```
 
-Secondly, run the development server:
+Secondly in another terminal instance, run the development server:
 
 ```bash
 npm run dev
