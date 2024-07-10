@@ -18,7 +18,7 @@ const DoubleWidthRotationTable = () => {
         setIsClient(true);
         getFlatMates();
         getChores();
-    }, []);
+    }, [ flatmates ]);
 
     const getFlatMates = async () => {
         const records = await pb.collection('flatmates').getFullList({
@@ -39,14 +39,32 @@ const DoubleWidthRotationTable = () => {
     const getFlatmatePos = (id: string) => flatmates.findIndex(flatmates => (flatmates.id === id));
 
     const handleDragEnd = (event: any) => {
+        let shiftedFlatmateArr: Person[] = [];
+
         const {active, over} = event
         if (active.id === over.id) return;
 
-        setFlatmates((flatmates) => {
+        setFlatmates((flatmates: Person[]) => {
             const orginalPos = getFlatmatePos(active.id)
             const newPos = getFlatmatePos(over.id)
             return arrayMove(flatmates, orginalPos, newPos)
         })
+
+        // shiftedFlatmateArr = arrayMove(flatmates, orginalPos, newPos)
+        // return shiftedFlatmateArr;
+
+        // console.log("oldarray", flatmates);
+        // console.log("newarray", shiftedFlatmateArr);
+        //
+        // shiftedFlatmateArr.forEach(async (flatmate) =>{
+        //     const data = {
+        //         "name": flatmate.name
+        //     };
+        //     await pb.collection('flatmates').create(data, {
+        //         sort: '-created',
+        //         requestKey: null
+        //     });
+        // })
     }
 
     const sensors = useSensors(
