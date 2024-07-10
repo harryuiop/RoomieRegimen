@@ -13,6 +13,9 @@
 /.next/
 /out/
 
+# pocketbase data
+/pocketbase_dir/pb_data
+
 # production
 /build
 
