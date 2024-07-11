@@ -20,6 +20,7 @@ import { CSS } from "@dnd-kit/utilities"
         paddingLeft: 10,
         paddingRight: 20,
         borderRadius: 20,
+        "touch-action": "none",
         cursor: "pointer",
         backgroundColor: primary ? "#9F2B68" : "#242424"
     }

@@ -48,11 +48,12 @@ const SingleWidthRotationTable = () => {
                 borderRadius: 3,
                 width: '100%',
                 maxHeight: '80vh',
-                overflowY: 'auto',
+                overflowY: 'clip',
+                overflowX: 'clip'
             }}
         >
-            <DndContext sensors={sensors} onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
-                <SortableContext items={flatmates} strategy={verticalListSortingStrategy}>
+            <DndContext sensors={sensors} onDragEnd={handleDragEnd} collisionDetection={closestCorners} >
+                <SortableContext items={flatmates} strategy={verticalListSortingStrategy} >
                     {flatmates.map((flatmate) => (
                         <div key={flatmate.id}>
                             {flatmates.indexOf(flatmate) === 0 ? <NameCard id={flatmate.id} name={flatmate.name} primary={true}/>
