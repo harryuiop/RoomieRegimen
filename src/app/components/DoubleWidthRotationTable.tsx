@@ -4,6 +4,7 @@ import PocketBase from "pocketbase";
 import { DndContext, closestCorners, useSensor, PointerSensor, TouchSensor, useSensors } from "@dnd-kit/core";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { SortableContext, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
+import axios, { AxiosResponse } from 'axios';
 import NameCard from "./NameCard";
 import { Chore, Person } from "pbData";
 import ChoreCard from "./ChoreCard";
@@ -12,19 +13,23 @@ const DoubleWidthRotationTable = () => {
     const [flatmates, setFlatmates] = useState<Person[]>([]);
     const [chores, setChores] = useState<Chore[]>([]);
     const [isClient, setIsClient] = useState(false);
-    const pb = useRef(new PocketBase('http://127.0.0.1:8090')).current;
 
     // Fetch flatmates and chores
     useEffect(() => {
         setIsClient(true);
-        const fetchData = async () => {
-            const flatmateRecords = await pb.collection('flatmates').getFullList({ sort: '-created', requestKey: null });
-            const choreRecords = await pb.collection('chores').getFullList({ sort: '-created', requestKey: null });
-            setFlatmates(flatmateRecords.map(record => ({ id: record.id, name: record.name })));
-            setChores(choreRecords.map(record => ({ id: record.id, chore: record.chore_name })));
+        const getChores = async () => {
+            const records: AxiosResponse = await axios.get('/api/get-chores');
+            const chores = records.data.response.rows
+            setChores(chores.map((record: Person) => ({ id: record.id, name: record.name })));
         };
-        fetchData();
-    }, [pb]);
+        const getFlatMates = async () => {
+            const records: AxiosResponse = await axios.get('/api/get-flatmates');
+            const flatmates = records.data.response.rows
+            setFlatmates(flatmates.map((record: Person) => ({ id: record.id, name: record.name })));
+        };
+        getChores();
+        getFlatMates();
+    }, []);
 
     // Rotate flatmates
     useEffect(() => {
@@ -72,15 +77,11 @@ const DoubleWidthRotationTable = () => {
             <Container style={{ padding: 0 }}>
                 <Grid container spacing={1}>
                     <Grid item xs={6} sm={6}>
-                        <DndContext sensors={sensors} onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
-                            <SortableContext items={chores} strategy={verticalListSortingStrategy}>
-                                {chores.map((chore) => (
-                                    <div key={chore.id}>
-                                        <ChoreCard id={chore.id} name={chore.chore} />
-                                    </div>
-                                ))}
-                            </SortableContext>
-                        </DndContext>
+                        {chores.map((chore) => (
+                            <div key={chore.id}>
+                                <ChoreCard id={chore.id} name={chore.name} />
+                            </div>
+                        ))}
                     </Grid>
                     <Grid item xs={6} sm={6}>
                         <DndContext sensors={sensors} onDragEnd={handleDragEnd} collisionDetection={closestCorners}>

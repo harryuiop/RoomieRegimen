@@ -1,16 +1,14 @@
-'use client';
 import { Box } from "@mui/material";
-import PocketBase from "pocketbase";
 import { DndContext, closestCorners, useSensor, PointerSensor, TouchSensor, useSensors } from "@dnd-kit/core"
 import { useEffect, useState } from "react";
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable"
 import NameCard from "./NameCard";
 import { Person } from "pbData";
+import axios, { AxiosResponse } from 'axios';
 
 const SingleWidthRotationTable = () => {
     const [flatmates, setFlatmates] = useState<Person[]>([]);
     const [isClient, setIsClient] = useState(false);
-    const pb = new PocketBase('http://127.0.0.1:8090');
 
     useEffect(() => {
         setIsClient(true);
@@ -18,11 +16,9 @@ const SingleWidthRotationTable = () => {
     }, []);
 
     const getFlatMates = async () => {
-        const records = await pb.collection('flatmates').getFullList({
-            sort: '-created',
-            requestKey: null
-        });
-        setFlatmates(records.map(record => ({ id: record.id, name: record.name })));
+        const records: AxiosResponse = await axios.get('/api/get-flatmates');
+        const flatmates = records.data.response.rows
+        setFlatmates(flatmates.map((record: Person) => ({ id: record.id, name: record.name })));
     };
 
     const getFlatmatePos = (id: string) => flatmates.findIndex(flatmates => (flatmates.id === id));

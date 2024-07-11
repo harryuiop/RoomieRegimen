@@ -6,6 +6,6 @@ declare module "pbData" {
 
     export interface Chore {
         id: string;
-        chore: string;
+        name: string;
     }
 }
