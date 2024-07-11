@@ -71,7 +71,8 @@ const DoubleWidthRotationTable = () => {
                 borderRadius: 3,
                 width: '100%',
                 maxHeight: '80vh',
-                overflowY: 'auto',
+                overflowY: 'clip',
+                overflowX: 'clip'
             }}
         >
             <Container style={{ padding: 0 }}>
