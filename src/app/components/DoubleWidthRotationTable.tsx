@@ -1,9 +1,9 @@
 'use client';
 import { Box, Container, Grid } from "@mui/material";
 import PocketBase from "pocketbase";
-import { DndContext, closestCorners, useSensor, PointerSensor, TouchSensor, useSensors } from "@dnd-kit/core"
-import { useEffect, useState } from "react";
-import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable"
+import { DndContext, closestCorners, useSensor, PointerSensor, TouchSensor, useSensors } from "@dnd-kit/core";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { SortableContext, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
 import NameCard from "./NameCard";
 import { Chore, Person } from "pbData";
 import ChoreCard from "./ChoreCard";
@@ -12,65 +12,50 @@ const DoubleWidthRotationTable = () => {
     const [flatmates, setFlatmates] = useState<Person[]>([]);
     const [chores, setChores] = useState<Chore[]>([]);
     const [isClient, setIsClient] = useState(false);
-    const pb = new PocketBase('http://127.0.0.1:8090');
+    const pb = useRef(new PocketBase('http://127.0.0.1:8090')).current;
 
+    // Fetch flatmates and chores
     useEffect(() => {
         setIsClient(true);
-        getFlatMates();
-        getChores();
-    }, [ flatmates ]);
+        const fetchData = async () => {
+            const flatmateRecords = await pb.collection('flatmates').getFullList({ sort: '-created', requestKey: null });
+            const choreRecords = await pb.collection('chores').getFullList({ sort: '-created', requestKey: null });
+            setFlatmates(flatmateRecords.map(record => ({ id: record.id, name: record.name })));
+            setChores(choreRecords.map(record => ({ id: record.id, chore: record.chore_name })));
+        };
+        fetchData();
+    }, [pb]);
 
-    const getFlatMates = async () => {
-        const records = await pb.collection('flatmates').getFullList({
-            sort: '-created',
-            requestKey: null
-        });
-        setFlatmates(records.map(record => ({ id: record.id, name: record.name })));
-    };
+    // Rotate flatmates
+    useEffect(() => {
+        const rotateFlatmates = () => {
+            setFlatmates(prevFlatmates => {
+                if (prevFlatmates.length > 0) {
+                    return [...prevFlatmates.slice(1), prevFlatmates[0]];
+                }
+                return prevFlatmates;
+            });
+        };
 
-    const getChores = async () => {
-        const records = await pb.collection('chores').getFullList({
-            sort: '-created',
-            requestKey: null
-        });
-        setChores(records.map(record => ({ id: record.id, chore: record.chore_name } )));
-    }
+        const intervalId = setInterval(rotateFlatmates, 60000 * 60 * 24); // Rotate every 24 hours
+        return () => clearInterval(intervalId); // Cleanup interval on unmount
+    }, []);
 
-    const getFlatmatePos = (id: string) => flatmates.findIndex(flatmates => (flatmates.id === id));
+    // Handle drag end
+    const getFlatmatePos = useCallback((id: string) => flatmates.findIndex(flatmate => (flatmate.id === id)), [flatmates]);
 
     const handleDragEnd = (event: any) => {
-        let shiftedFlatmateArr: Person[] = [];
-
-        const {active, over} = event
+        const { active, over } = event;
         if (active.id === over.id) return;
 
-        setFlatmates((flatmates: Person[]) => {
-            const orginalPos = getFlatmatePos(active.id)
-            const newPos = getFlatmatePos(over.id)
-            return arrayMove(flatmates, orginalPos, newPos)
-        })
+        setFlatmates(prevFlatmates => {
+            const originalPos = getFlatmatePos(active.id);
+            const newPos = getFlatmatePos(over.id);
+            return arrayMove(prevFlatmates, originalPos, newPos);
+        });
+    };
 
-        // shiftedFlatmateArr = arrayMove(flatmates, orginalPos, newPos)
-        // return shiftedFlatmateArr;
-
-        // console.log("oldarray", flatmates);
-        // console.log("newarray", shiftedFlatmateArr);
-        //
-        // shiftedFlatmateArr.forEach(async (flatmate) =>{
-        //     const data = {
-        //         "name": flatmate.name
-        //     };
-        //     await pb.collection('flatmates').create(data, {
-        //         sort: '-created',
-        //         requestKey: null
-        //     });
-        // })
-    }
-
-    const sensors = useSensors(
-        useSensor(PointerSensor),
-        useSensor(TouchSensor)
-    )
+    const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
 
     return (
         <Box
@@ -84,14 +69,14 @@ const DoubleWidthRotationTable = () => {
                 overflowY: 'auto',
             }}
         >
-            <Container style={{padding: 0}}>
+            <Container style={{ padding: 0 }}>
                 <Grid container spacing={1}>
                     <Grid item xs={6} sm={6}>
                         <DndContext sensors={sensors} onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
                             <SortableContext items={chores} strategy={verticalListSortingStrategy}>
                                 {chores.map((chore) => (
                                     <div key={chore.id}>
-                                        <ChoreCard id={chore.id} name={chore.chore}/>
+                                        <ChoreCard id={chore.id} name={chore.chore} />
                                     </div>
                                 ))}
                             </SortableContext>
@@ -102,7 +87,7 @@ const DoubleWidthRotationTable = () => {
                             <SortableContext items={flatmates} strategy={verticalListSortingStrategy}>
                                 {flatmates.map((flatmate) => (
                                     <div key={flatmate.id}>
-                                        <NameCard id={flatmate.id} name={flatmate.name} primary={false}/>
+                                        <NameCard id={flatmate.id} name={flatmate.name} primary={false} />
                                     </div>
                                 ))}
                             </SortableContext>
@@ -110,7 +95,6 @@ const DoubleWidthRotationTable = () => {
                     </Grid>
                 </Grid>
             </Container>
-
         </Box>
     );
 };
