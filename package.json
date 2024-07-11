@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "./start-pocketbase.sh && next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "./start-pocketbase.sh && next start",
     "lint": "next lint"
   },
   "dependencies": {
@@ -26,10 +26,5 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
     "typescript": "^5"
-  },
-    "scripts": {
-      "start": "./start-pocketbase.sh && next start",
-      "build": "next build",
-      "dev": "./start-pocketbase.sh && next dev"
-    }
+  }
 }
