@@ -36,7 +36,7 @@ const DoubleWidthRotationTable = () => {
                 return prevFlatmates;
             });
         };
-
+        // get hours till 12 in a settimeout then run the set interval within it
         const intervalId = setInterval(rotateFlatmates, 60000 * 60 * 24); // Rotate every 24 hours
         return () => clearInterval(intervalId); // Cleanup interval on unmount
     }, []);
