@@ -7,9 +7,9 @@ import { hash, compare } from './services/passwordHashing'
 export default function Login() {
     const router = useRouter();
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(false)
     const [textFieldProps, setTextFieldProps] = useState({
         id: 'outlined-password-input',
-        label: 'Password',
         type: 'password'
     });
 
@@ -18,12 +18,7 @@ export default function Login() {
             localStorage.setItem('token', password)
             router.push('/home');
         } else {
-            // Change TextField properties
-            setTextFieldProps({
-                ...textFieldProps,
-                label: 'Incorrect Password',
-                error: true
-            });
+            setError(true);
         }
     }
 
@@ -35,32 +30,47 @@ export default function Login() {
                 marginTop: 30
             }}>
                 <Box>
-                    <TextField
+                    {error ? <TextField
                         {...textFieldProps}
+                        label= 'Incorrect Password'
                         onChange={(event) => { setPassword(event.target.value) }}
+                        error={true}
                         sx={{
                             '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                    borderColor: 'white',
-                                },
-                                '&:hover fieldset': {
-                                    borderColor: 'white',
-                                },
-                                '&.Mui-focused fieldset': {
-                                    borderColor: 'white',
-                                },
                             },
                             '& .MuiInputBase-input': {
                                 color: 'white',
-                            },
-                            '& .MuiFormLabel-root': {
-                                color: 'white',
-                            },
-                            '& .MuiFormLabel-root.Mui-focused': {
-                                color: 'white',
                             }
                         }}
-                    />
+                    /> :
+                        <TextField
+                            {...textFieldProps}
+                            onChange={(event) => { setPassword(event.target.value) }}
+                            label= 'Password'
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: 'white',
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: 'white',
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: 'white',
+                                    },
+                                },
+                                '& .MuiInputBase-input': {
+                                    color: 'white',
+                                },
+                                '& .MuiFormLabel-root': {
+                                    color: 'white',
+                                },
+                                '& .MuiFormLabel-root.Mui-focused': {
+                                    color: 'white',
+                                }
+                            }}
+                        />
+                    }
                 </Box>
                 <Button variant="outlined"
                     onClick={handleButtonClick}
