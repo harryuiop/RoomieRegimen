@@ -15,6 +15,8 @@ export default function Home() {
         if (loginToken) {
             if (!((compare(loginToken, '$2a$10$IPPrOl6C/jwM/a4PPO1rduZzlgJddLx/ipi31/JfJteUMagkMgNG6')))) {
                 router.push('/');
+            } else {
+            router.push('/');
             }
     }
     } else {
