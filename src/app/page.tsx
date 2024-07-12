@@ -1,46 +1,81 @@
 'use client';
-import {Box, Container, Grid, Typography } from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
-import SingleWidthRotationTable from './components/SingleWidthRotationTable';
-import DoubleWidthRotationTable from './components/DoubleWidthRotationTable';
+import { Box, TextField, Button } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { hash, compare } from './services/passwordHashing'
 
-export default function Home() {
+export default function Login() {
+    const router = useRouter();
+    const [password, setPassword] = useState('');
+    const [textFieldProps, setTextFieldProps] = useState({
+        id: 'outlined-password-input',
+        label: 'Password',
+        type: 'password'
+    });
+
+    const handleButtonClick = async () => {
+        if (await compare(password, '$2a$10$IPPrOl6C/jwM/a4PPO1rduZzlgJddLx/ipi31/JfJteUMagkMgNG6')) {
+            localStorage.setItem('token', password)
+            router.push('/home');
+        } else {
+            // Change TextField properties
+            setTextFieldProps({
+                ...textFieldProps,
+                label: 'Incorrect Password',
+                error: true
+            });
+        }
+    }
+
     return (
         <main>
-            <Container style={{marginTop: 30}}>
-                <Grid container spacing={2}>
-                    <Grid item xs={11} sm={11} md={11} style={{marginBottom: 20}}>
-                        <h1 style={{ margin: 0 }}>128 Waimairi Road</h1>
-                    </Grid>
-
-                    <Grid item xs={1} sm={1} md={1}>
-                        <Box display="flex" justifyContent="flex-end" alignItems="center" height="67%">
-                            <SettingsIcon />
-                        </Box>
-                    </Grid>
-
-                    <Grid item xs={12} sm={12} md={3} >
-                        <Typography variant={"h4"} style={{marginBottom: 25}}>
-                            Dish Washer
-                        </Typography>
-                        <SingleWidthRotationTable />
-                    </Grid>
-
-                    <Grid item xs={12} sm={12} md={3}>
-                        <Typography variant={"h4"} style={{marginBottom: 25}}>
-                            Dryer
-                        </Typography>
-                        <SingleWidthRotationTable />
-                    </Grid>
-
-                    <Grid item xs={12} sm={12} md={6}>
-                        <Typography variant={"h4"} style={{marginBottom: 25}}>
-                            Chores
-                        </Typography>
-                        <DoubleWidthRotationTable />
-                    </Grid>
-                </Grid>
-            </Container>
+            <Box sx={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: 30
+            }}>
+                <Box>
+                    <TextField
+                        {...textFieldProps}
+                        onChange={(event) => { setPassword(event.target.value) }}
+                        sx={{
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                    borderColor: 'white',
+                                },
+                                '&:hover fieldset': {
+                                    borderColor: 'white',
+                                },
+                                '&.Mui-focused fieldset': {
+                                    borderColor: 'white',
+                                },
+                            },
+                            '& .MuiInputBase-input': {
+                                color: 'white',
+                            },
+                            '& .MuiFormLabel-root': {
+                                color: 'white',
+                            },
+                            '& .MuiFormLabel-root.Mui-focused': {
+                                color: 'white',
+                            }
+                        }}
+                    />
+                </Box>
+                <Button variant="outlined"
+                    onClick={handleButtonClick}
+                    sx={{
+                        marginLeft: 1,
+                        color: 'white',
+                        borderColor: 'white',
+                        '&:hover': {
+                            borderColor: 'white',
+                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        },
+                    }}>
+                    Enter
+                </Button>
+            </Box>
         </main>
     );
 }
