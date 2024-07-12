@@ -9,13 +9,14 @@ import { compare } from '../services/passwordHashing'
 
 export default function Home() {
     const router = useRouter();
-    const loginToken = localStorage.getItem('token');
 
-    if (loginToken) {
-        console.log(compare(loginToken, '$2a$10$IPPrOl6C/jwM/a4PPO1rduZzlgJddLx/ipi31/JfJteUMagkMgNG6'))
-        if (!((compare(loginToken, '$2a$10$IPPrOl6C/jwM/a4PPO1rduZzlgJddLx/ipi31/JfJteUMagkMgNG6')))) {
-            router.push('/');
-        }
+    if (typeof window !== 'undefined') {
+        const loginToken = localStorage.getItem('token');
+        if (loginToken) {
+            if (!((compare(loginToken, '$2a$10$IPPrOl6C/jwM/a4PPO1rduZzlgJddLx/ipi31/JfJteUMagkMgNG6')))) {
+                router.push('/');
+            }
+    }
     } else {
         router.push('/');
     }

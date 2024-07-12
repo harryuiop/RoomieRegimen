@@ -15,7 +15,9 @@ export default function Login() {
 
     const handleButtonClick = async () => {
         if (await compare(password, '$2a$10$IPPrOl6C/jwM/a4PPO1rduZzlgJddLx/ipi31/JfJteUMagkMgNG6')) {
-            localStorage.setItem('token', password)
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('token', password)
+            }
             router.push('/home');
         } else {
             setError(true);
