@@ -1,5 +1,6 @@
 'use client';
 import { Box, TextField, Button } from '@mui/material';
+import axios, { AxiosResponse } from 'axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { hash, compare } from './services/passwordHashing'
@@ -14,7 +15,9 @@ export default function Login() {
     });
 
     const handleButtonClick = async () => {
-        if (await compare(password, '$2a$10$IPPrOl6C/jwM/a4PPO1rduZzlgJddLx/ipi31/JfJteUMagkMgNG6')) {
+        const records: AxiosResponse = await axios.get('/api/get-password');
+        const passwordDB = records.data.response.rows[0].password
+        if (password === passwordDB) {
             if (typeof window !== 'undefined') {
                 localStorage.setItem('token', password)
             }

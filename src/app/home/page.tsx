@@ -3,6 +3,7 @@ import {Box, Container, Grid, Typography } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SingleWidthRotationTable from '../components/SingleWidthRotationTable';
 import DoubleWidthRotationTable from '../components/DoubleWidthRotationTable';
+import axios, { AxiosResponse } from 'axios';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { compare } from '../services/passwordHashing'
@@ -10,18 +11,27 @@ import { compare } from '../services/passwordHashing'
 export default function Home() {
     const router = useRouter();
 
-    if (typeof window !== 'undefined') {
-        const loginToken = localStorage.getItem('token');
-        if (loginToken) {
-            if (!((compare(loginToken, '$2a$10$IPPrOl6C/jwM/a4PPO1rduZzlgJddLx/ipi31/JfJteUMagkMgNG6')))) {
-                router.push('/');
-            } else {
-            router.push('/');
+    useEffect(() => {
+        const checkAuth = async () => {
+            if (typeof window !== 'undefined') {
+                const records: AxiosResponse = await axios.get('/api/get-password');
+                const password = records.data.response.rows[0].password
+                const loginToken = localStorage.getItem('token');
+                console.log('test',loginToken);
+                if (loginToken) {
+                    if (loginToken === password) {
+                        // Correct
+                    } else {
+                        router.push('/');
+                    }
+                } else {
+                    router.push('/');
+                }
             }
-    }
-    } else {
-        router.push('/');
-    }
+        }
+
+        checkAuth();
+    }, [])
 
     return (
         <main>
